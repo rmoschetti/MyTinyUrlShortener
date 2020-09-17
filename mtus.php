@@ -7,7 +7,7 @@
 define('_FileDataName_',"mtus_data.php");
 
 //First line of the file with the data
-define('FileDataHeader',"<?php exit(); ?>\n");
+define('_FileDataHeader_',"<?php exit(); ?>\n");
 
 //Passcode for administration
 define('_Password_',"1234567890");
@@ -42,6 +42,16 @@ function ReadDataAsCSV($FileDataName) {
 	return $resultsArray;
 }
 
+function WriteDataAsCSV($FileDataName,$Data) {
+	$fp = fopen($FileDataName, 'w');
+	fwrite($fp,_FileDataHeader_);
+	foreach ($Data as $lines) {
+		fputcsv($fp, $lines);
+	}
+
+	fclose($fp);
+}
+
 function Init() {
 	
 	if (isset($_GET["u"])) { 
@@ -60,12 +70,18 @@ function Init() {
 			$ArrayData=ReadDataAsCSV(_FileDataName_);
 			DisplayTable($ArrayData);
 			
-		} elseif ($Operation=="write") {
+		} elseif ($Operation=="insert") {
 			//Write a new line
 			
 		} elseif ($Operation=="delete") {
 			//Remove a line
-
+			$ArrayData=ReadDataAsCSV(_FileDataName_);
+			$ToRemove=$_POST["ElDelete"];
+			for ($i=count($ToRemove)-1;$i>=0;$i--) {
+				array_splice($ArrayData,$ToRemove[$i],1);
+			}
+			WriteDataAsCSV(_FileDataName_,$ArrayData);
+			DisplayTable($ArrayData);
 		}
 	
 	} else {
@@ -76,22 +92,24 @@ function Init() {
 	
 }
 
+
+
 function DisplayTable($Data) {
-	$FormInsert="<form><table border='solid'><tr><td>Short name</td><td><input type='text' name='short' required></td></tr><tr><td>Url text</td><td><input type='text' name='long' required></td></tr><tr><td><input type='password' placeholder='Enter Password' name='password' required></td><td><button type='submit'>Login</button></td></tr></table></form><br><hr><br>";
+	$FormInsert="<form><table border='solid'><tr><td>Short name</td><td><input type='text' name='short' required></td></tr><tr><td>Url text</td><td><input type='text' name='long' required></td></tr><tr><td><input type='password' placeholder='Enter Password' name='password' required></td><td><button type='submit'>Login</button></td></tr></table><input type='hidden' name='o' value='insert'></form><br><hr><br>";
 	
 	
-	$HeaderTable="<form><table border='solid'><thead><tr><td>Id</td><td>Short url</td><td>Long url</td><td>Clicks</td><td>Delete?</td></tr></thead><tbody>";
+	$HeaderTable="<form action='".basename(__FILE__)."' method='post'><table border='solid'><thead><tr><td>Id</td><td>Short url</td><td>Long url</td><td>Clicks</td><td>Delete?</td></tr></thead><tbody>";
 	$FooterTable="</tbody></table><br><input type='hidden' name='o' value='delete'><input type='password' placeholder='Enter Password' name='password' required><button type='submit'>Delete Selected</button></form>";
 	
 	echo $FormInsert;
 	echo $HeaderTable;
-	foreach ($Data as $Line) {
+	for ($i=0; $i<count($Data);$i++) {
 		echo "<tr>";
-		echo "<td>".$Line[0]."</td>";
-		echo "<td>".$Line[1]."</td>";
-		echo "<td>".$Line[2]."</td>";
-		echo "<td>".$Line[3]."</td>";
-		echo "<td><input type='checkbox' name='ElDelete[]' value='".$Line[0]."'></td>";
+		echo "<td>".$i."</td>";
+		echo "<td>".$Data[$i][0]."</td>";
+		echo "<td>".$Data[$i][1]."</td>";
+		echo "<td>".$Data[$i][2]."</td>";
+		echo "<td><input type='checkbox' name='ElDelete[]' value='".$i."'></td>";
 		echo "</tr>";
 	}
 	
