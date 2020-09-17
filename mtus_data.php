@@ -1,5 +1,3 @@
 <?php exit(); ?>
-sfsdf;dsfsdf;"0
-"
-rgergeter;terte;"0
-"
+sfsdf;dsfsdf;0
+regret;reter;0
