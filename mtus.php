@@ -46,10 +46,21 @@ function WriteDataAsCSV($FileDataName,$Data) {
 	$fp = fopen($FileDataName, 'w');
 	fwrite($fp,_FileDataHeader_);
 	foreach ($Data as $lines) {
-		fputcsv($fp, $lines);
+		fputcsv($fp, $lines,";");
 	}
 
 	fclose($fp);
+}
+
+function AddLineToFile($FileDataName,$String) {
+	file_put_contents($FileDataName,"\n".$String,FILE_APPEND);
+}
+
+function SearchForShortName($Data,$String) {
+	foreach ($Data as $Line) {
+		if ($Line[0]===$String) return true;
+	}
+	return false;
 }
 
 function Init() {
@@ -72,6 +83,17 @@ function Init() {
 			
 		} elseif ($Operation=="insert") {
 			//Write a new line
+			$ArrayData=ReadDataAsCSV(_FileDataName_);
+			$ShortName=$_POST["short"];
+			$LongUrl=$_POST["long"];
+			if (SearchForShortName($ArrayData,$ShortName)) {
+				echo "Warning: duplicate short name";
+				DisplayTable($ArrayData);
+			} else {
+				AddLineToFile(_FileDataName_,$ShortName.";".$LongUrl.";"."0");
+				$ArrayData[]=[$ShortName,$LongUrl,0];
+				DisplayTable($ArrayData);
+			}
 			
 		} elseif ($Operation=="delete") {
 			//Remove a line
@@ -95,7 +117,7 @@ function Init() {
 
 
 function DisplayTable($Data) {
-	$FormInsert="<form><table border='solid'><tr><td>Short name</td><td><input type='text' name='short' required></td></tr><tr><td>Url text</td><td><input type='text' name='long' required></td></tr><tr><td><input type='password' placeholder='Enter Password' name='password' required></td><td><button type='submit'>Login</button></td></tr></table><input type='hidden' name='o' value='insert'></form><br><hr><br>";
+	$FormInsert="<form action='".basename(__FILE__)."' method='post'><table border='solid'><tr><td>Short name</td><td><input type='text' name='short' required></td></tr><tr><td>Url text</td><td><input type='text' name='long' required></td></tr><tr><td><input type='password' placeholder='Enter Password' name='password' required></td><td><button type='submit'>Add new url</button></td></tr></table><input type='hidden' name='o' value='insert'></form><br><hr><br>";
 	
 	
 	$HeaderTable="<form action='".basename(__FILE__)."' method='post'><table border='solid'><thead><tr><td>Id</td><td>Short url</td><td>Long url</td><td>Clicks</td><td>Delete?</td></tr></thead><tbody>";
