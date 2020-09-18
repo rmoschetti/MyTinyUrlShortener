@@ -12,7 +12,7 @@ The configuration data are at the beginning of mtus.php:
 
 define('_FileDataName_',"mtus_data.php"); - This is the name of the auxiliary file. The extension is irrelevant, but I like to keep it php, which together with the first line of the file, specified in the following option, helps keeping the urls private.
 
-define('_FileDataHeader_',"<?php exit(); ?>\n"); - This is the first line of the auxiliary file. It must contain at least "\n" at the moment (the parsing of the url starts always from the second line).
+define('_FileDataHeader_',"<?php exit(); ?>"); - This is the first line of the auxiliary file. The parsing of the url starts always from the second line.
 
 define('_Password_','hash_value'); - This is a password which must be inserted any time an operation with the data is performed. Notice that no session data are stored. I don't like for my password to be clearly stored in the code, so here is the hash made with password_hash function of PHP with algorithm PASSWORD_DEFAULT.
 
