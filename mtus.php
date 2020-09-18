@@ -35,13 +35,15 @@ WriteFooter();
 
 
 function Redirect($Data,$Short) {
-	$LongUrl=SearchForShortName($Data,0,$Short,1);
+	$LongUrl=SearchForShortName($Data,0,$Short,-2);
 	if ($LongUrl==false) {
 		echo "No shortened url with this name";
+		FallBack();
 	} else {
-	
-	
-	
+		$Data[$LongUrl][2]++;
+		WriteDataAsCSV(_FileDataName_,$Data);
+		header("Location: ".$Data[$LongUrl][1]);
+		exit();
 	}
 }
 
@@ -83,12 +85,13 @@ function SearchForShortName($Data,$WhereToSearch,$String,$WhatToGiveBack) {
 //This function looks the first occurrence in which $Data[$WhereToSearch] is $String.
 //It returns $Data[$WhatToGiveBack] if $WhatToGiveBack>=0
 //It returns true if $WhatToGiveBack==-1
+//It returns the position in $Data if $WhatToGiveBack==-2
 //It returns false if no occurrence is found
-	foreach ($Data as $Line) {
-		if ($Line[$WhereToSearch]===$String) {
-			if ($WhatToGiveBack>-1) return $Line[$WhatToGiveBack]; 
+	for ($i=0; $i<count($Data);$i++)
+		if ($Data[$i][$WhereToSearch]===$String) {
+			if ($WhatToGiveBack>-1) return $Data[$i][$WhatToGiveBack]; 
+			elseif ($WhatToGiveBack==-2) return $i;
 			else return true;
-		
 		}
 	}
 	return false;
@@ -185,6 +188,7 @@ function WriteLogin() {
 function Auth($InsertPsw,$StoredPsw) {
 	if ($InsertPsw!==$StoredPsw) {
 		echo "Authentication error";
+		FallBack();
 		exit();
 	}
 }
