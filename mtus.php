@@ -57,6 +57,10 @@ function FallBack() {
 
 function ReadDataAsCSV($FileDataName) {
 	$myfile = fopen($FileDataName, "r");
+	if ($myfile===false) {
+		file_put_contents($FileDataName,_FileDataHeader_);
+		return array();
+	}
 	$FileLines= fgets($myfile);
 	$resultsArray = array();
 	while(($FileLines= fgets($myfile)) !==false) {
