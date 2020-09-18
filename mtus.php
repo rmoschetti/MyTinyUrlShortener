@@ -140,10 +140,13 @@ function Init() {
 			DisplayTable($ArrayData);
 		}
 	
-	} else {
-		//No requests, show login form
+	} elseif ($Operation=="login") {
+		//Show login form
 		WriteLogin();
-		
+	} else {
+		//No requests, either fallback or show login
+		Fallback();
+		WriteLogin();
 	}
 	
 }
