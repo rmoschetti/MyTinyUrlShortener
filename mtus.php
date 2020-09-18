@@ -37,7 +37,9 @@ function ReadDataAsCSV($FileDataName) {
 	$resultsArray = array();
 	while(($FileLines= fgets($myfile)) !==false) {
 		$FileLines=str_replace("\n","",$FileLines);
-		$resultsArray[] = explode(";", $FileLines);
+		if (strlen($FileLines)>3) {
+			$resultsArray[] = explode(";", $FileLines);
+		}
 	}
 	fclose($myfile);
 	return $resultsArray;
