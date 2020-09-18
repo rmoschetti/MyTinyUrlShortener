@@ -93,7 +93,7 @@ function SearchForShortName($Data,$WhereToSearch,$String,$WhatToGiveBack) {
 //It returns true if $WhatToGiveBack==-1
 //It returns the position in $Data if $WhatToGiveBack==-2
 //It returns false if no occurrence is found
-	for ($i=0; $i<count($Data);$i++)
+	for ($i=0; $i<count($Data);$i++) {
 		if ($Data[$i][$WhereToSearch]===$String) {
 			if ($WhatToGiveBack>-1) return $Data[$i][$WhatToGiveBack]; 
 			elseif ($WhatToGiveBack==-2) return $i;
@@ -111,6 +111,10 @@ function Init() {
 		$ArrayData=ReadDataAsCSV(_FileDataName_);
 		Redirect($ArrayData,$UrlEnc);
 		
+	} elseif (isset($_GET["o"]) && $_GET["o"]=="login") {
+		//Show login form
+		WriteLogin();
+
 	} elseif (isset($_POST["o"]) && isset($_POST["password"])) {
 		//Request for an operation.
 		$Operation=$_POST["o"];
@@ -145,17 +149,16 @@ function Init() {
 			}
 			WriteDataAsCSV(_FileDataName_,$ArrayData);
 			DisplayTable($ArrayData);
+			
+		} else {
+			Fallback();
+			WriteLogin();
 		}
-	
-	} elseif ($Operation=="login") {
-		//Show login form
-		WriteLogin();
 	} else {
 		//No requests, either fallback or show login
 		Fallback();
 		WriteLogin();
 	}
-	
 }
 
 
