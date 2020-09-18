@@ -1,5 +1,5 @@
 # MyTinyUrlShortener
-A one-file DB-less url shortener written in php
+A one-file DB-less cookie-free url shortener written in php
 
 I was tired to always loog for another third party url shortener, so I have written my own in PHP.
 It consists in just one file (mtus.php) with create a auxiliary data file. The two possible urls are the following:
@@ -19,3 +19,5 @@ define('_Password_','hash_value'); - This is a password which must be inserted a
 define('_PasswordHash_',true); - If it don't bother you to write a clear password in the code, just set this to false and write your password directly in _Password_. 
 
 define('_FallbackUrl_',""); - This is a fallback url, in case one want to keep this code invisible. For instance, I use to rename mtus.php to index.php, and then use this option to redirect the user at the usual homepage of my website.
+
+define('_UrlEncode_',true); - This tells the program to encode the url in the external file (this is just to get rid of possible ";", which could cause problems with the csv style of the external data file.
