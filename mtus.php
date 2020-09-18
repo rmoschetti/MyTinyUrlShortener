@@ -12,6 +12,9 @@ define('_FileDataHeader_',"<?php exit(); ?>\n");
 //Passcode for administration
 define('_Password_',"1234567890");
 
+//Url where to go if any error happens. It can be left empty
+define('_FallbackUrl_',"");
+
 
 /***************************************/
 /*          END CONFIGURATION          */
@@ -31,8 +34,33 @@ WriteFooter();
 /***************************************/
 
 
+function Redirect($Data,$Short) {
+	$LongUrl=SearchForShortName($Data,0,$Short,-2);
+	if ($LongUrl==false) {
+		echo "No shortened url with this name";
+		FallBack();
+	} else {
+		$Data[$LongUrl][2]++;
+		WriteDataAsCSV(_FileDataName_,$Data);
+		header("Location: ".$Data[$LongUrl][1]);
+		exit();
+	}
+}
+
+function FallBack() {
+	if (_FallbackUrl_ != "") {
+		header("Location: "._FallbackUrl_);
+		exit();
+	}
+}
+
+
 function ReadDataAsCSV($FileDataName) {
 	$myfile = fopen($FileDataName, "r");
+	if ($myfile===false) {
+		file_put_contents($FileDataName,_FileDataHeader_);
+		return array();
+	}
 	$FileLines= fgets($myfile);
 	$resultsArray = array();
 	while(($FileLines= fgets($myfile)) !==false) {
@@ -59,9 +87,18 @@ function AddLineToFile($FileDataName,$String) {
 	file_put_contents($FileDataName,"\n".$String,FILE_APPEND);
 }
 
-function SearchForShortName($Data,$String) {
-	foreach ($Data as $Line) {
-		if ($Line[0]===$String) return true;
+function SearchForShortName($Data,$WhereToSearch,$String,$WhatToGiveBack) {
+//This function looks the first occurrence in which $Data[$WhereToSearch] is $String.
+//It returns $Data[$WhatToGiveBack] if $WhatToGiveBack>=0
+//It returns true if $WhatToGiveBack==-1
+//It returns the position in $Data if $WhatToGiveBack==-2
+//It returns false if no occurrence is found
+	for ($i=0; $i<count($Data);$i++)
+		if ($Data[$i][$WhereToSearch]===$String) {
+			if ($WhatToGiveBack>-1) return $Data[$i][$WhatToGiveBack]; 
+			elseif ($WhatToGiveBack==-2) return $i;
+			else return true;
+		}
 	}
 	return false;
 }
@@ -71,7 +108,8 @@ function Init() {
 	if (isset($_GET["u"])) { 
 		//Request for a Url.
 		$UrlEnc=$_GET["u"];
-		
+		$ArrayData=ReadDataAsCSV(_FileDataName_);
+		Redirect($ArrayData,$UrlEnc);
 		
 	} elseif (isset($_POST["o"]) && isset($_POST["password"])) {
 		//Request for an operation.
@@ -89,7 +127,7 @@ function Init() {
 			$ArrayData=ReadDataAsCSV(_FileDataName_);
 			$ShortName=$_POST["short"];
 			$LongUrl=$_POST["long"];
-			if (SearchForShortName($ArrayData,$ShortName)) {
+			if (SearchForShortName($ArrayData,0,$ShortName,-1)) {
 				echo "Warning: duplicate short name";
 				DisplayTable($ArrayData);
 			} else {
@@ -109,10 +147,13 @@ function Init() {
 			DisplayTable($ArrayData);
 		}
 	
-	} else {
-		//No requests, show login form
+	} elseif ($Operation=="login") {
+		//Show login form
 		WriteLogin();
-		
+	} else {
+		//No requests, either fallback or show login
+		Fallback();
+		WriteLogin();
 	}
 	
 }
@@ -157,6 +198,7 @@ function WriteLogin() {
 function Auth($InsertPsw,$StoredPsw) {
 	if ($InsertPsw!==$StoredPsw) {
 		echo "Authentication error";
+		FallBack();
 		exit();
 	}
 }
