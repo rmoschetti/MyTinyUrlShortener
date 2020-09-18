@@ -9,7 +9,7 @@ define('_FileDataName_',"mtus_data.php");
 //First line of the file with the data
 define('_FileDataHeader_',"<?php exit(); ?>\n");
 
-//Passcode for administration
+//Passcode for administration - note for you, it is "1234567890"
 define('_Password_','$2y$10$DRtepbPgkUYv5GYhkJ5Qo.gQxK1nBron2caWuHtJ/pQYyyS83U4rO');
 
 //Set true if the password is hashed, false if it is not.
@@ -183,8 +183,8 @@ function DisplayTable($Data) {
 	for ($i=0; $i<count($Data);$i++) {
 		echo "<tr>";
 		echo "<td>".$i."</td>";
-		echo "<td>".$Data[$i][0]."</td>";
-		echo "<td>".$Data[$i][1]."</td>";
+		echo "<td><a href='". $_SERVER['REQUEST_URI']."?u=".$Data[$i][0]."'>".$Data[$i][0]."</a></td>";
+		echo "<td><a href='".$Data[$i][1]."'>".$Data[$i][1]."</a></td>";
 		echo "<td>".$Data[$i][2]."</td>";
 		echo "<td><input type='checkbox' name='ElDelete[]' value='".$i."'></td>";
 		echo "</tr>";
