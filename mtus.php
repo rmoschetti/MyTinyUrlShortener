@@ -7,7 +7,7 @@
 define('_FileDataName_',"mtus_data.php");
 
 //First line of the file with the data
-define('_FileDataHeader_',"<?php exit(); ?>\n");
+define('_FileDataHeader_',"<?php exit(); ?>");
 
 //Passcode for administration - note for you, it is "1234567890"
 define('_Password_','$2y$10$DRtepbPgkUYv5GYhkJ5Qo.gQxK1nBron2caWuHtJ/pQYyyS83U4rO');
@@ -48,8 +48,8 @@ function CreateNewDataFile($FileDataName) {
 
 function Redirect($Data,$Short) {
 	$LongUrl=SearchForShortName($Data,0,$Short,-2);
-	if ($LongUrl==false) {
-		echo "No shortened url with this name";
+	if ($LongUrl==-1) {
+		echo "No shortened url with name ".$Short;
 		FallBack();
 	} else {
 		$Data[$LongUrl][2]++;
@@ -109,10 +109,10 @@ function SearchForShortName($Data,$WhereToSearch,$String,$WhatToGiveBack) {
 		if ($Data[$i][$WhereToSearch]===$String) {
 			if ($WhatToGiveBack>-1) return $Data[$i][$WhatToGiveBack]; 
 			elseif ($WhatToGiveBack==-2) return $i;
-			else return true;
+			else return 1;
 		}
 	}
-	return false;
+	return -1;
 }
 
 function Init() {
