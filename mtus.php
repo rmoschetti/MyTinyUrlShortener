@@ -10,7 +10,10 @@ define('_FileDataName_',"mtus_data.php");
 define('_FileDataHeader_',"<?php exit(); ?>\n");
 
 //Passcode for administration
-define('_Password_',"1234567890");
+define('_Password_','$2y$10$DRtepbPgkUYv5GYhkJ5Qo.gQxK1nBron2caWuHtJ/pQYyyS83U4rO');
+
+//Set true if the password is hashed, false if it is not.
+define('_PasswordHash_',true);
 
 //Url where to go if any error happens. It can be left empty
 define('_FallbackUrl_',"");
@@ -21,6 +24,7 @@ define('_FallbackUrl_',"");
 /***************************************/
 
 
+CreateNewDataFile(_FileDataName_);
 WriteHeader();
 Init();
 WriteFooter();
@@ -33,6 +37,11 @@ WriteFooter();
 /*              FUNCTIONS              */
 /***************************************/
 
+function CreateNewDataFile($FileDataName) {
+	if (!file_exists($FileDataName)) {
+		file_put_contents($FileDataName,_FileDataHeader_);
+	}
+}
 
 function Redirect($Data,$Short) {
 	$LongUrl=SearchForShortName($Data,0,$Short,-2);
@@ -58,7 +67,6 @@ function FallBack() {
 function ReadDataAsCSV($FileDataName) {
 	$myfile = fopen($FileDataName, "r");
 	if ($myfile===false) {
-		file_put_contents($FileDataName,_FileDataHeader_);
 		return array();
 	}
 	$FileLines= fgets($myfile);
@@ -199,11 +207,13 @@ function WriteLogin() {
 }
 
 function Auth($InsertPsw,$StoredPsw) {
-	if ($InsertPsw!==$StoredPsw) {
-		echo "Authentication error";
-		FallBack();
-		exit();
-	}
+	if (_PasswordHash_ && password_verify($InsertPsw,$StoredPsw)) return 1;
+	if (!_PasswordHash_ && $InsertPsw===$StoredPsw) return 1;
+	
+	echo "Authentication error";
+	FallBack();
+	exit();
+
 }
 
 ?>

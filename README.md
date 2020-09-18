@@ -14,6 +14,8 @@ define('_FileDataName_',"mtus_data.php"); - This is the name of the auxiliary fi
 
 define('_FileDataHeader_',"<?php exit(); ?>\n"); - This is the first line of the auxiliary file. It must contain at least "\n" at the moment (the parsing of the url starts always from the second line).
 
-define('_Password_',"1234567890"); - This is a password which must be inserted any time an operation with the data is performed. Notice that no session data are stored.
+define('_Password_','hash_value'); - This is a password which must be inserted any time an operation with the data is performed. Notice that no session data are stored. I don't like for my password to be clearly stored in the code, so here is the hash made with password_hash function of PHP with algorithm PASSWORD_DEFAULT.
+
+define('_PasswordHash_',true); - If it don't bother you to write a clear password in the code, just set this to false and write your password directly in _Password_. 
 
 define('_FallbackUrl_',""); - This is a fallback url, in case one want to keep this code invisible. For instance, I use to rename mtus.php to index.php, and then use this option to redirect the user at the usual homepage of my website.
