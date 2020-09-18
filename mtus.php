@@ -54,7 +54,9 @@ function Redirect($Data,$Short) {
 	} else {
 		$Data[$LongUrl][2]++;
 		WriteDataAsCSV(_FileDataName_,$Data);
-		header("Location: ".$Data[$LongUrl][1]);
+		$RedUrl=$Data[$LongUrl][1];
+		if (_UrlEncode_) $RedUrl=urldecode($RedUrl);
+		header("Location: ".$RedUrl);
 		exit();
 	}
 }
@@ -78,7 +80,7 @@ function ReadDataAsCSV($FileDataName) {
 		$FileLines=str_replace("\n","",$FileLines);
 		if (strlen($FileLines)>3) {
 			$resultsArray[] = explode(";", $FileLines);
-			if (_UrlEncode_) $resultsArray[count($resultsArray)-1][1]=urldecode($resultsArray[count($resultsArray)-1][1]);
+			$resultsArray[count($resultsArray)-1][1]=$resultsArray[count($resultsArray)-1][1];
 		}
 	}
 	fclose($myfile);
@@ -87,7 +89,7 @@ function ReadDataAsCSV($FileDataName) {
 
 function WriteDataAsCSV($FileDataName,$Data) {
 	$fp = fopen($FileDataName, 'w');
-	fwrite($fp,_FileDataHeader_);
+	fwrite($fp,_FileDataHeader_."\n");
 	foreach ($Data as $lines) {
 		fputcsv($fp, $lines,";");
 	}
@@ -95,9 +97,6 @@ function WriteDataAsCSV($FileDataName,$Data) {
 	fclose($fp);
 }
 
-function AddLineToFile($FileDataName,$String) {
-	file_put_contents($FileDataName,"\n".$String,FILE_APPEND);
-}
 
 function SearchForShortName($Data,$WhereToSearch,$String,$WhatToGiveBack) {
 //This function looks the first occurrence in which $Data[$WhereToSearch] is $String.
@@ -143,13 +142,14 @@ function Init() {
 			$ArrayData=ReadDataAsCSV(_FileDataName_);
 			$ShortName=$_POST["short"];
 			$LongUrl=$_POST["long"];
-			if (SearchForShortName($ArrayData,0,$ShortName,-1)) {
+			if (SearchForShortName($ArrayData,0,$ShortName,-1)==1) {
 				echo "Warning: duplicate short name";
 				DisplayTable($ArrayData);
 			} else {
+				if (_UrlEncode_) $LongUrl=urlencode($LongUrl);
 				$ArrayData[]=[$ShortName,$LongUrl,0];
-				if (_UrlEncode_) $LongUrl=urlencode ($LongUrl);
-				AddLineToFile(_FileDataName_,$ShortName.";".$LongUrl.";"."0");
+				WriteDataAsCSV(_FileDataName_,$ArrayData);
+				//AddLineToFile(_FileDataName_,$ShortName.";".$LongUrl.";"."0");
 				DisplayTable($ArrayData);
 			}
 			
@@ -186,10 +186,12 @@ function DisplayTable($Data) {
 	echo $FormInsert;
 	echo $HeaderTable;
 	for ($i=0; $i<count($Data);$i++) {
+		$LongUrl=$Data[$i][1];
+		if (_UrlEncode_) $LongUrl=urldecode($LongUrl);
 		echo "<tr>";
 		echo "<td>".$i."</td>";
 		echo "<td><a href='". $_SERVER['REQUEST_URI']."?u=".$Data[$i][0]."'>".$Data[$i][0]."</a></td>";
-		echo "<td><a href='".$Data[$i][1]."'>".$Data[$i][1]."</a></td>";
+		echo "<td style='word-wrap:break-word;'><a href='".$LongUrl."'>".$LongUrl."</a></td>";
 		echo "<td>".$Data[$i][2]."</td>";
 		echo "<td><input type='checkbox' name='ElDelete[]' value='".$i."'></td>";
 		echo "</tr>";
