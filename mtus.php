@@ -66,9 +66,17 @@ function AddLineToFile($FileDataName,$String) {
 	file_put_contents($FileDataName,"\n".$String,FILE_APPEND);
 }
 
-function SearchForShortName($Data,$String) {
+function SearchForShortName($Data,$WhereToSearch,$String,$WhatToGiveBack) {
+//This function looks the first occurrence in which $Data[$WhereToSearch] is $String.
+//It returns $Data[$WhatToGiveBack] if $WhatToGiveBack>=0
+//It returns true if $WhatToGiveBack==-1
+//It returns false if no occurrence is found
 	foreach ($Data as $Line) {
-		if ($Line[0]===$String) return true;
+		if ($Line[$WhereToSearch]===$String) {
+			if ($WhatToGiveBack>-1) return $Line[$WhatToGiveBack]; 
+			else return true;
+		
+		}
 	}
 	return false;
 }
