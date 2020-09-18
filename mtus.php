@@ -102,7 +102,8 @@ function Init() {
 	if (isset($_GET["u"])) { 
 		//Request for a Url.
 		$UrlEnc=$_GET["u"];
-		
+		$ArrayData=ReadDataAsCSV(_FileDataName_);
+		Redirect($ArrayData,$UrlEnc);
 		
 	} elseif (isset($_POST["o"]) && isset($_POST["password"])) {
 		//Request for an operation.
