@@ -18,6 +18,9 @@ define('_PasswordHash_',true);
 //Url where to go if any error happens. It can be left empty
 define('_FallbackUrl_',"");
 
+//Check if url has to be encoded and decoded
+define('_UrlEncode_',true);
+
 
 /***************************************/
 /*          END CONFIGURATION          */
@@ -75,6 +78,7 @@ function ReadDataAsCSV($FileDataName) {
 		$FileLines=str_replace("\n","",$FileLines);
 		if (strlen($FileLines)>3) {
 			$resultsArray[] = explode(";", $FileLines);
+			if (_UrlEncode_) $resultsArray[count($resultsArray)-1][1]=urldecode($resultsArray[count($resultsArray)-1][1]);
 		}
 	}
 	fclose($myfile);
@@ -143,8 +147,9 @@ function Init() {
 				echo "Warning: duplicate short name";
 				DisplayTable($ArrayData);
 			} else {
-				AddLineToFile(_FileDataName_,$ShortName.";".$LongUrl.";"."0");
 				$ArrayData[]=[$ShortName,$LongUrl,0];
+				if (_UrlEncode_) $LongUrl=urlencode ($LongUrl);
+				AddLineToFile(_FileDataName_,$ShortName.";".$LongUrl.";"."0");
 				DisplayTable($ArrayData);
 			}
 			
