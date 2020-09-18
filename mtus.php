@@ -12,6 +12,9 @@ define('_FileDataHeader_',"<?php exit(); ?>\n");
 //Passcode for administration
 define('_Password_',"1234567890");
 
+//Url where to go if any error happens. It can be left empty
+define('_FallbackUrl_',"");
+
 
 /***************************************/
 /*          END CONFIGURATION          */
@@ -32,11 +35,21 @@ WriteFooter();
 
 
 function Redirect($Data,$Short) {
+	$LongUrl=SearchForShortName($Data,0,$Short,1);
+	if ($LongUrl==false) {
+		echo "No shortened url with this name";
+	} else {
+	
+	
+	
+	}
+}
 
-
-
-
-
+function FallBack() {
+	if (_FallbackUrl_ != "") {
+		header("Location: "._FallbackUrl_);
+		exit();
+	}
 }
 
 
@@ -104,7 +117,7 @@ function Init() {
 			$ArrayData=ReadDataAsCSV(_FileDataName_);
 			$ShortName=$_POST["short"];
 			$LongUrl=$_POST["long"];
-			if (SearchForShortName($ArrayData,$ShortName)) {
+			if (SearchForShortName($ArrayData,0,$ShortName,-1)) {
 				echo "Warning: duplicate short name";
 				DisplayTable($ArrayData);
 			} else {
