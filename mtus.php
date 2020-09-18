@@ -31,6 +31,15 @@ WriteFooter();
 /***************************************/
 
 
+function Redirect($Data,$Short) {
+
+
+
+
+
+}
+
+
 function ReadDataAsCSV($FileDataName) {
 	$myfile = fopen($FileDataName, "r");
 	$FileLines= fgets($myfile);
